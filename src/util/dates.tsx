@@ -28,7 +28,7 @@ function partitionFields(fields: JSX.Element[]) : JSX.Element[][] {
     return partitions
 }
 
-export function buildFields(month: number, year: number): JSX.Element[][] {
+export function buildFields(month: number, year: number, onClick: (date: Date) => void, highlighted: Date[]): JSX.Element[][] {
     const dates = calculateDaysOfMonth(month, year)
     const elements: JSX.Element[] = []
     let pointer: number = 0;
@@ -38,11 +38,24 @@ export function buildFields(month: number, year: number): JSX.Element[][] {
             elements.push(<CalendarFieldDummy />)
             pointer += 1;
         }
-        elements.push(<CalendarField date={date} />)
+        elements.push(<CalendarField highlighted={arrayIncludesDate(highlighted, date)} onClick={onClick} date={date} />)
         pointer += 1;
     }
     for(let i = 0; i < (elements.length % weekDays.length); i++) {
         elements.push(<CalendarFieldDummy />)
     }
     return partitionFields(elements)
+}
+
+export function datesAreEqual(date1: Date, date2: Date) {
+    return date1.getTime() === date2.getTime()
+}
+
+export function arrayIncludesDate(dates: Date[], date: Date) {
+    let includes: boolean = false
+    for(const d of dates) {
+        if(datesAreEqual(d, date))
+            includes = true
+    }
+    return includes
 }
